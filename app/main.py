@@ -1,18 +1,18 @@
 from fastapi import FastAPI, HTTPException
 
-app = FastAPI(title="Func")
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
-def fibonacci(n: int):
-    a, b = 0, 1
-    for _ in range(n):
-        a, b = b, a + b
-    return a
+app = FastAPI(title="3D Repository")
 
-@app.get("/fibonacci/{index}")
 
-def get_fibonacci(index: int):
-    if index < 0:
-        raise HTTPException(status_code=400, detail="ind must be >= 0")
-    return {"index": index, "value": fibonacci(index)}
+class Message(BaseModel):
+    text: str
 
+
+@app.post("/message")
+def send_message(message: Message):
+    return {
+        "message": message.text
+    }
 
