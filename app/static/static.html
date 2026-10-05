@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>3D Repository</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            color: #222;
+        }
+
+        header {
+            background: #222;
+            color: white;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .models {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-card h2 {
+            margin-top: 0;
+        }
+
+        .format {
+            display: inline-block;
+            background: #eee;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #222;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        #model-details {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>3D Repository</h1>
+</header>
+
+<div class="container">
+
+    <h2>3D модели</h2>
+
+    <div id="models" class="models">
+        Загрузка моделей...
+    </div>
+
+    <div id="model-details"></div>
+
+</div>
+
+
+<script>
+
+async function loadModels() {
+
+    const response = await fetch("/models");
+
+    const models = await response.json();
+
+    const container = document.getElementById("models");
+
+    container.innerHTML = "";
+
+    models.forEach(model => {
+
+        const card = document.createElement("div");
+
+        card.className = "model-card";
+
+        card.innerHTML = `
+            <h2>${model.title}</h2>
+
+            <p>${model.description}</p>
+
+            <span class="format">
+                Формат: ${model.format}
+            </span>
+
+            <br>
+
+            <button onclick="showModel(${model.id})">
+                Подробнее
+            </button>
+        `;
+
+        container.appendChild(card);
+
+    });
+}
+
+
+async function showModel(id) {
+
+    const response = await fetch(`/models/${id}`);
+
+    const model = await response.json();
+
+    const details = document.getElementById("model-details");
+
+    details.innerHTML = `
+        <h2>${model.title}</h2>
+
+        <p>${model.description}</p>
+
+        <p>
+            Формат: <strong>${model.format}</strong>
+        </p>
+
+        <button>
+            Скачать
+        </button>
+    `;
+}
+
+
+loadModels();
+
+</script>
+
+</body>
+
+</html>
