@@ -146,9 +146,7 @@ async function loadModels() {
 
 
 async function showModel(id) {
-
     const response = await fetch(`/models/${id}`);
-
     const model = await response.json();
 
     const details = document.getElementById("model-details");
@@ -159,15 +157,18 @@ async function showModel(id) {
         <p>${model.description}</p>
 
         <p>
-            Формат: <strong>${model.format}</strong>
+            Формат:
+            <strong>${model.format}</strong>
         </p>
 
-        <button>
-            Скачать
-        </button>
+        <a
+            href="/models/${model.id}/download"
+            download
+        >
+            <button>Скачать</button>
+        </a>
     `;
 }
-
 
 loadModels();
 
