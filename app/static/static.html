@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>3D Repository</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -17,72 +14,325 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f2f2f2;
+            background: #f4f4f4;
             color: #222;
         }
 
         header {
             background: #222;
             color: white;
-            padding: 20px;
+            padding: 25px;
+            text-align: center;
         }
 
         header h1 {
             margin: 0;
+            font-size: 32px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #ccc;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
         }
 
-        .models {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+        /* -----------------------------
+           ФОРМА ЗАГРУЗКИ
+        ----------------------------- */
+
+        .upload-form {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
+        .upload-form h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .upload-button {
+            background: #222;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .upload-button:hover {
+            background: #444;
+        }
+
+        .upload-button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* -----------------------------
+           КАТАЛОГ
+        ----------------------------- */
+
+        .catalog-title {
+            margin-bottom: 20px;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* -----------------------------
+           КАРТОЧКА МОДЕЛИ
+        ----------------------------- */
 
         .model-card {
             background: white;
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
         }
 
-        .model-card h2 {
+        .model-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Превью */
+
+        .model-preview {
+            width: 100%;
+            height: 220px;
+            background: #e9e9e9;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        .model-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-preview {
+            color: #777;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* Информация */
+
+        .model-info {
+            padding: 18px;
+        }
+
+        .model-info h3 {
             margin-top: 0;
+            margin-bottom: 10px;
         }
 
-        .format {
+        .model-description {
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .model-format {
             display: inline-block;
             background: #eee;
-            padding: 5px 10px;
+            padding: 5px 9px;
             border-radius: 5px;
-            margin-top: 10px;
+            font-size: 13px;
+            margin-bottom: 15px;
         }
 
-        button {
-            margin-top: 15px;
-            padding: 10px 15px;
+        .model-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .model-buttons button {
+            flex: 1;
+            padding: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .details-button {
+            background: #ddd;
+            color: #222;
+        }
+
+        .details-button:hover {
+            background: #ccc;
+        }
+
+        .download-button {
             background: #222;
             color: white;
-            cursor: pointer;
         }
 
-        button:hover {
+        .download-button:hover {
             background: #444;
         }
 
-        #model-details {
-            margin-top: 30px;
+        /* -----------------------------
+           ОКНО ПОДРОБНОЙ ИНФОРМАЦИИ
+        ----------------------------- */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+            z-index: 1000;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.65);
+
+            align-items: center;
+            justify-content: center;
+
             padding: 20px;
-            background: white;
-            border-radius: 10px;
         }
 
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            border-radius: 10px;
+            padding: 25px;
+
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+
+            font-size: 28px;
+            cursor: pointer;
+
+            color: #555;
+        }
+
+        .close-button:hover {
+            color: #000;
+        }
+
+        .modal-image {
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            background: #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .modal h2 {
+            margin-top: 0;
+        }
+
+        .modal-description {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .modal-download {
+            display: inline-block;
+            margin-top: 20px;
+
+            background: #222;
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+        }
+
+        .modal-download:hover {
+            background: #444;
+        }
+
+        /* -----------------------------
+           АДАПТИВНОСТЬ
+        ----------------------------- */
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 25px;
+            }
+
+            .container {
+                padding: 0 10px;
+            }
+
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -90,90 +340,692 @@
 
 <header>
     <h1>3D Repository</h1>
+    <p>Каталог 3D моделей</p>
 </header>
 
 <div class="container">
 
-    <h2>3D модели</h2>
+    <!-- =================================
+         ФОРМА ЗАГРУЗКИ
+    ================================== -->
 
-    <div id="models" class="models">
-        Загрузка моделей...
+    <div class="upload-form">
+
+        <h2>Добавить 3D модель</h2>
+
+        <form id="upload-form">
+
+            <div class="form-group">
+                <label for="title">
+                    Название
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="Например: Medieval Sword"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="description">
+                    Описание
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Описание 3D модели..."
+                    required
+                ></textarea>
+            </div>
+
+
+            <div class="form-group">
+                <label for="file">
+                    3D файл
+                </label>
+
+                <input
+                    type="file"
+                    id="file"
+                    accept=".blend"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="image">
+                    Изображение-превью
+                </label>
+
+                <input
+                    type="file"
+                    id="image"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    required
+                >
+            </div>
+
+
+            <button
+                type="submit"
+                class="upload-button"
+                id="upload-button"
+            >
+                Загрузить модель
+            </button>
+
+        </form>
+
+        <div id="message"></div>
+
     </div>
 
-    <div id="model-details"></div>
+
+    <!-- =================================
+         КАТАЛОГ
+    ================================== -->
+
+    <h2 class="catalog-title">
+        Каталог моделей
+    </h2>
+
+    <div
+        id="models"
+        class="models-grid"
+    ></div>
+
+</div>
+
+
+<!-- =================================
+     MODAL
+================================== -->
+
+<div
+    id="modal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <span
+            class="close-button"
+            onclick="closeModal()"
+        >
+            &times;
+        </span>
+
+
+        <div id="modal-body"></div>
+
+    </div>
 
 </div>
 
 
 <script>
 
-async function loadModels() {
+    /* =================================
+       ЗАГРУЗКА МОДЕЛЕЙ
+    ================================== */
 
-    const response = await fetch("/models");
+    async function loadModels() {
 
-    const models = await response.json();
+        const modelsContainer =
+            document.getElementById("models");
 
-    const container = document.getElementById("models");
-
-    container.innerHTML = "";
-
-    models.forEach(model => {
-
-        const card = document.createElement("div");
-
-        card.className = "model-card";
-
-        card.innerHTML = `
-            <h2>${model.title}</h2>
-
-            <p>${model.description}</p>
-
-            <span class="format">
-                Формат: ${model.format}
-            </span>
-
-            <br>
-
-            <button onclick="showModel(${model.id})">
-                Подробнее
-            </button>
-        `;
-
-        container.appendChild(card);
-
-    });
-}
+        modelsContainer.innerHTML =
+            "<p>Загрузка моделей...</p>";
 
 
-async function showModel(id) {
-    const response = await fetch(`/models/${id}`);
-    const model = await response.json();
+        try {
 
-    const details = document.getElementById("model-details");
+            const response =
+                await fetch("/models");
 
-    details.innerHTML = `
-        <h2>${model.title}</h2>
 
-        <p>${model.description}</p>
+            if (!response.ok) {
 
-        <p>
-            Формат:
-            <strong>${model.format}</strong>
-        </p>
+                throw new Error(
+                    "Ошибка загрузки каталога"
+                );
 
-        <a
-            href="/models/${model.id}/download"
-            download
-        >
-            <button>Скачать</button>
-        </a>
-    `;
-}
+            }
 
-loadModels();
+
+            const models =
+                await response.json();
+
+
+            modelsContainer.innerHTML = "";
+
+
+            if (models.length === 0) {
+
+                modelsContainer.innerHTML =
+                    "<p>Пока нет загруженных моделей.</p>";
+
+                return;
+            }
+
+
+            models.forEach(model => {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "model-card";
+
+
+                /* -----------------------------
+                   ПРЕВЬЮ
+                ----------------------------- */
+
+                let previewHTML = "";
+
+
+                if (model.image_path) {
+
+                    previewHTML = `
+                        <div class="model-preview">
+                            <img
+                                src="/${model.image_path}"
+                                alt="${escapeHtml(model.title)}"
+                            >
+                        </div>
+                    `;
+
+                } else {
+
+                    previewHTML = `
+                        <div class="model-preview">
+                            <div class="no-preview">
+                                Нет изображения
+                            </div>
+                        </div>
+                    `;
+
+                }
+
+
+                /* -----------------------------
+                   КАРТОЧКА
+                ----------------------------- */
+
+                card.innerHTML = `
+
+                    ${previewHTML}
+
+                    <div class="model-info">
+
+                        <h3>
+                            ${escapeHtml(model.title)}
+                        </h3>
+
+                        <div class="model-description">
+                            ${escapeHtml(model.description || "Нет описания")}
+                        </div>
+
+                        <div class="model-format">
+                            ${escapeHtml(model.format)}
+                        </div>
+
+                        <div class="model-buttons">
+
+                            <button
+                                class="details-button"
+                                onclick="showModel(${model.id})"
+                            >
+                                Подробнее
+                            </button>
+
+                            <button
+                                class="download-button"
+                                onclick="downloadModel(${model.id})"
+                            >
+                                Скачать
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+
+
+                modelsContainer.appendChild(card);
+
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            modelsContainer.innerHTML =
+                "<p class='error'>Не удалось загрузить каталог.</p>";
+
+        }
+
+    }
+
+
+    /* =================================
+       ПОКАЗАТЬ МОДЕЛЬ
+    ================================== */
+
+    async function showModel(id) {
+
+        try {
+
+            const response =
+                await fetch(`/models/${id}`);
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Модель не найдена"
+                );
+
+            }
+
+
+            const model =
+                await response.json();
+
+
+            const modal =
+                document.getElementById("modal");
+
+            const modalBody =
+                document.getElementById("modal-body");
+
+
+            let imageHTML = "";
+
+
+            if (model.image_path) {
+
+                imageHTML = `
+                    <img
+                        class="modal-image"
+                        src="/${model.image_path}"
+                        alt="${escapeHtml(model.title)}"
+                    >
+                `;
+
+            }
+
+
+            modalBody.innerHTML = `
+
+                ${imageHTML}
+
+                <h2>
+                    ${escapeHtml(model.title)}
+                </h2>
+
+                <p>
+                    <strong>Формат:</strong>
+                    ${escapeHtml(model.format)}
+                </p>
+
+                <p class="modal-description">
+                    ${escapeHtml(model.description || "Нет описания")}
+                </p>
+
+                <a
+                    class="modal-download"
+                    href="/models/${model.id}/download"
+                >
+                    Скачать модель
+                </a>
+
+            `;
+
+
+            modal.style.display =
+                "flex";
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Не удалось загрузить информацию о модели."
+            );
+
+        }
+
+    }
+
+
+    /* =================================
+       ЗАКРЫТЬ MODAL
+    ================================== */
+
+    function closeModal() {
+
+        document.getElementById("modal")
+            .style.display = "none";
+
+    }
+
+
+    /* =================================
+       ЗАКРЫТИЕ ПО КЛИКУ ВНЕ ОКНА
+    ================================== */
+
+    window.onclick = function(event) {
+
+        const modal =
+            document.getElementById("modal");
+
+
+        if (event.target === modal) {
+
+            closeModal();
+
+        }
+
+    };
+
+
+    /* =================================
+       СКАЧИВАНИЕ
+    ================================== */
+
+    function downloadModel(id) {
+
+        window.location.href =
+            `/models/${id}/download`;
+
+    }
+
+
+    /* =================================
+       ФОРМА ЗАГРУЗКИ
+    ================================== */
+
+    document
+        .getElementById("upload-form")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const title =
+                    document.getElementById("title").value;
+
+                const description =
+                    document.getElementById("description").value;
+
+                const file =
+                    document.getElementById("file").files[0];
+
+                const image =
+                    document.getElementById("image").files[0];
+
+
+                const message =
+                    document.getElementById("message");
+
+                const button =
+                    document.getElementById("upload-button");
+
+
+                /* Проверяем файлы */
+
+                if (!file) {
+
+                    message.className =
+                        "error";
+
+                    message.textContent =
+                        "Выберите 3D файл.";
+
+                    return;
+
+                }
+
+
+                if (!image) {
+
+                    message.className =
+                        "error";
+
+                    message.textContent =
+                        "Выберите изображение.";
+
+                    return;
+
+                }
+
+
+                /* Проверяем формат 3D */
+
+                const fileExtension =
+                    file.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase();
+
+
+                if (fileExtension !== "blend") {
+
+                    message.className =
+                        "error";
+
+                    message.textContent =
+                        "Разрешены только файлы .blend";
+
+                    return;
+
+                }
+
+
+                /* Проверяем формат изображения */
+
+                const imageExtension =
+                    image.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase();
+
+
+                const allowedImages = [
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "webp"
+                ];
+
+
+                if (
+                    !allowedImages.includes(
+                        imageExtension
+                    )
+                ) {
+
+                    message.className =
+                        "error";
+
+                    message.textContent =
+                        "Разрешены JPG, JPEG, PNG и WEBP.";
+
+                    return;
+
+                }
+
+
+                /* FormData */
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "title",
+                    title
+                );
+
+
+                formData.append(
+                    "description",
+                    description
+                );
+
+
+                formData.append(
+                    "file",
+                    file
+                );
+
+
+                formData.append(
+                    "image",
+                    image
+                );
+
+
+                /* Блокируем кнопку */
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Загрузка...";
+
+
+                message.className = "";
+
+                message.textContent =
+                    "Загрузка модели...";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/models/upload",
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+                    /*
+                     * Получаем ответ как текст.
+                     * Это позволяет нормально
+                     * показать ошибку даже если
+                     * Nginx/FastAPI вернул HTML.
+                     */
+
+                    const responseText =
+                        await response.text();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            `HTTP ${response.status}: ${responseText}`
+                        );
+
+                    }
+
+
+                    let result;
+
+                    try {
+
+                        result =
+                            JSON.parse(responseText);
+
+                    } catch {
+
+                        throw new Error(
+                            "Сервер вернул некорректный ответ."
+                        );
+
+                    }
+
+
+                    console.log(
+                        "Модель загружена:",
+                        result
+                    );
+
+
+
+                    message.className =
+                        "success";
+
+                    message.textContent =
+                        "Модель успешно загружена!";
+
+
+
+                    document
+                        .getElementById("upload-form")
+                        .reset();
+
+
+
+                    await loadModels();
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    message.className =
+                        "error";
+
+                    message.textContent =
+                        "Ошибка загрузки: " +
+                        error.message;
+
+
+                } finally {
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "Загрузить модель";
+
+                }
+
+            }
+        );
+
+
+
+    function escapeHtml(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            text;
+
+        return div.innerHTML;
+
+    }
+
+
+
+    loadModels();
 
 </script>
 
 </body>
-
 </html>
+

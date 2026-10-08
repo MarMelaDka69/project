@@ -15,3 +15,5 @@ class Model(Base):
     format = Column(String(20), nullable=False)
 
     file_path = Column(String(500), nullable=True)
+
+    image_path = Column(String(500), nullable=True)
