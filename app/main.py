@@ -11,12 +11,14 @@ from app.database import engine, SessionLocal, Base
 from app.models import Model
 
 
+from app.schemas import ModelResponse
+
 
 app = FastAPI(title="3D Repository")
 
 
-
-Base.metadata.create_all(bind=engine)
+# удалено для теста
+#Base.metadata.create_all(bind=engine)
 
 
 
@@ -31,7 +33,6 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 IMAGE_DIR = UPLOAD_DIR / "images"
 
 
-# Создаём папки, если их ещё нет
 
 UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -90,7 +91,7 @@ def get_messages():
 
 
 
-@app.get("/models")
+@app.get("/models", response_model=list[ModelResponse])
 def get_models():
 
     db: Session = SessionLocal()
@@ -108,7 +109,7 @@ def get_models():
 
 
 
-@app.post("/models")
+@app.post("/models", response_model=ModelResponse)
 def create_model(model_data: ModelCreate):
 
     db: Session = SessionLocal()
@@ -135,7 +136,7 @@ def create_model(model_data: ModelCreate):
 
 
 
-@app.post("/models/upload")
+@app.post("/models/upload", response_model=ModelResponse)
 async def upload_model(
 
     title: str = Form(...),
@@ -278,7 +279,7 @@ async def upload_model(
 
 
 
-@app.get("/models/{model_id}")
+@app.get("/models/{model_id}", response_model=ModelResponse)
 def get_model(model_id: int):
 
     db: Session = SessionLocal()
@@ -338,8 +339,11 @@ def download_model(model_id: int):
                 detail="File path not found"
             )
 
-
-        file_path = BASE_DIR / model.file_path
+#тут поменялось для теста
+        # было
+        # file_path = BASE_DIR / model.file_path
+        # стало
+        file_path = UPLOAD_DIR / Path(model.file_path).name
 
 
         if not file_path.exists():
