@@ -1,4 +1,3 @@
-
 import pytest
 
 from fastapi.testclient import TestClient
@@ -8,7 +7,10 @@ from sqlalchemy.pool import StaticPool
 
 from app import main
 from app.database import Base
+from app.auth import get_current_user
+from app.models import User
 
+from app import auth
 
 @pytest.fixture
 def test_env(tmp_path, monkeypatch):
@@ -30,6 +32,12 @@ def test_env(tmp_path, monkeypatch):
         main,
         "SessionLocal",
         TestingSessionLocal,
+    )
+
+    monkeypatch.setattr(
+        auth,
+        "SessionLocal",
+        TestingSessionLocal
     )
 
     upload_dir = tmp_path / "uploads"
@@ -62,3 +70,24 @@ def test_env(tmp_path, monkeypatch):
 @pytest.fixture
 def client(test_env):
     return test_env["client"]
+
+
+@pytest.fixture
+def authenticated_client(client):
+    fake_user = User(
+        id=1,
+        username="testuser",
+        email="test@example.com",
+        role="user",
+        password_hash="test-hash",
+    )
+
+    def override_current_user():
+        return fake_user
+
+    main.app.dependency_overrides[get_current_user] = override_current_user
+
+    try:
+        yield client
+    finally:
+        main.app.dependency_overrides.pop(get_current_user, None)

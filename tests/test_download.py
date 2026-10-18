@@ -1,6 +1,6 @@
 
-def test_download_model(test_env):
-    client = test_env["client"]
+def test_download_model(test_env, authenticated_client):
+    client = authenticated_client
 
     created = client.post(
         "/models/upload",
@@ -50,7 +50,8 @@ def test_download_model_not_found(client):
     }
 
 
-def test_download_without_file_path(client):
+def test_download_without_file_path(authenticated_client):
+    client = authenticated_client
     created = client.post(
         "/models",
         json={
@@ -72,8 +73,8 @@ def test_download_without_file_path(client):
     }
 
 
-def test_download_missing_file(test_env):
-    client = test_env["client"]
+def test_download_missing_file(test_env, authenticated_client):
+    client = authenticated_client
 
     created = client.post(
         "/models/upload",

@@ -25,7 +25,8 @@ def test_openapi_contract_unchanged():
     )
 
 
-def test_models_response_contract(client):
+def test_models_response_contract(authenticated_client):
+    client = authenticated_client
     response = client.post(
         "/models",
         json={

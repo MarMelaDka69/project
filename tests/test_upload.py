@@ -2,8 +2,8 @@
 from app.models import Model
 
 
-def test_upload_model(test_env):
-    client = test_env["client"]
+def test_upload_model(test_env, authenticated_client):
+    client = authenticated_client
 
     response = client.post(
         "/models/upload",
@@ -51,7 +51,8 @@ def test_upload_model(test_env):
         assert model.image_path == "uploads/images/bmw.png"
 
 
-def test_reject_wrong_model_extension(client):
+def test_reject_wrong_model_extension(authenticated_client):
+    client = authenticated_client
     response = client.post(
         "/models/upload",
         data={
@@ -78,7 +79,8 @@ def test_reject_wrong_model_extension(client):
     )
 
 
-def test_reject_wrong_image_extension(client):
+def test_reject_wrong_image_extension(authenticated_client):
+    client = authenticated_client
     response = client.post(
         "/models/upload",
         data={
@@ -105,7 +107,8 @@ def test_reject_wrong_image_extension(client):
     )
 
 
-def test_upload_missing_image(client):
+def test_upload_missing_image(authenticated_client):
+    client = authenticated_client
     response = client.post(
         "/models/upload",
         data={
@@ -122,3 +125,26 @@ def test_upload_missing_image(client):
     )
 
     assert response.status_code == 422
+
+def test_upload_requires_auth(client):
+    response = client.post(
+        "/models/upload",
+        data={
+            "title": "Unauthorized model",
+            "description": "Test",
+        },
+        files={
+            "file": (
+                "test.blend",
+                b"test file content",
+                "application/octet-stream",
+            ),
+            "image": (
+                "preview.png",
+                b"image content",
+                "image/png",
+            ),
+        },
+    )
+
+    assert response.status_code == 401

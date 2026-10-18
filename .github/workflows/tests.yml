@@ -28,5 +28,6 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: sqlite:///./ci_import.db
+          SESSION_SECRET_KEY: "test-only-secret-key-for-github-actions"
         run: |
           python -m pytest -v

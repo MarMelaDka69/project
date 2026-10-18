@@ -3,969 +3,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>3D Repository</title>
-
     <style>
-        * {
-            box-sizing: border-box;
+        * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #222; color: white; padding: 27px 20px; text-align: center; }
+        header h1 { margin: 0; font-size: 32px; }
+        header p { margin: 8px 0 0; color: #ccc; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .panel { background: white; padding: 24px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+        .panel h2 { margin-top: 0; }
+        .auth-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+        .auth-grid h3 { margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: 6px; font: inherit;
         }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            color: #222;
-        }
-
-        header {
-            background: #222;
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        header p {
-            margin: 8px 0 0;
-            color: #ccc;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-
-        .upload-form {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 35px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .upload-form h2 {
-            margin-top: 0;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .upload-button {
-            background: #222;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .upload-button:hover {
-            background: #444;
-        }
-
-        .upload-button:disabled {
-            background: #999;
-            cursor: not-allowed;
-        }
-
-        #message {
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        .success {
-            color: green;
-        }
-
-        .error {
-            color: red;
-        }
-
-
-        .catalog-title {
-            margin-bottom: 20px;
-        }
-
-        .models-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-
-        .model-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s;
-        }
-
-        .model-card:hover {
-            transform: translateY(-3px);
-        }
-
-
-        .model-preview {
-            width: 100%;
-            height: 220px;
-            background: #e9e9e9;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            overflow: hidden;
-        }
-
-        .model-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .no-preview {
-            color: #777;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        /* Информация */
-
-        .model-info {
-            padding: 18px;
-        }
-
-        .model-info h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
-        .model-description {
-            color: #666;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .model-format {
-            display: inline-block;
-            background: #eee;
-            padding: 5px 9px;
-            border-radius: 5px;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-
-        .model-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .model-buttons button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .details-button {
-            background: #ddd;
-            color: #222;
-        }
-
-        .details-button:hover {
-            background: #ccc;
-        }
-
-        .download-button {
-            background: #222;
-            color: white;
-        }
-
-        .download-button:hover {
-            background: #444;
-        }
-
-
-        .modal {
-            display: none;
-
-            position: fixed;
-            z-index: 1000;
-
-            left: 0;
-            top: 0;
-
-            width: 100%;
-            height: 100%;
-
-            background: rgba(0, 0, 0, 0.65);
-
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 800px;
-            max-height: 90vh;
-
-            overflow-y: auto;
-
-            border-radius: 10px;
-            padding: 25px;
-
-            position: relative;
-        }
-
-        .close-button {
-            position: absolute;
-            right: 20px;
-            top: 15px;
-
-            font-size: 28px;
-            cursor: pointer;
-
-            color: #555;
-        }
-
-        .close-button:hover {
-            color: #000;
-        }
-
-        .modal-image {
-            width: 100%;
-            max-height: 450px;
-            object-fit: contain;
-            background: #eee;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .modal h2 {
-            margin-top: 0;
-        }
-
-        .modal-description {
-            line-height: 1.6;
-            color: #555;
-        }
-
-        .modal-download {
-            display: inline-block;
-            margin-top: 20px;
-
-            background: #222;
-            color: white;
-
-            padding: 12px 20px;
-
-            border-radius: 6px;
-
-            text-decoration: none;
-        }
-
-        .modal-download:hover {
-            background: #444;
-        }
-
-
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 25px;
-            }
-
-            .container {
-                padding: 0 10px;
-            }
-
-            .models-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        button { font: inherit; }
+        .button { background: #222; color: white; border: none; border-radius: 6px; padding: 12px 18px; cursor: pointer; }
+        .button:hover { background: #444; }
+        .button:disabled { background: #999; cursor: not-allowed; }
+        .button-light { background: #e5e5e5; color: #222; }
+        .button-light:hover { background: #d0d0d0; }
+        .feedback { margin: 14px 0 0; min-height: 20px; overflow-wrap: anywhere; }
+        .success { color: #147b34; }
+        .error { color: #b42318; }
+        .hint { color: #666; font-size: 14px; }
+        .user-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .catalog-title { margin: 28px 0 20px; }
+        .models-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .model-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+        .model-preview { height: 220px; background: #e9e9e9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .model-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .no-preview { color: #777; text-align: center; }
+        .model-info { padding: 18px; }
+        .model-info h3 { margin: 0 0 10px; overflow-wrap: anywhere; }
+        .model-description { color: #666; margin: 0 0 12px; line-height: 1.4; overflow-wrap: anywhere; }
+        .model-format { display: inline-block; background: #eee; padding: 5px 9px; border-radius: 5px; font-size: 13px; margin-bottom: 15px; }
+        .model-buttons { display: flex; gap: 10px; }
+        .model-buttons .button { flex: 1; padding: 10px; font-size: 14px; }
+        .modal { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #fff; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 10px; padding: 25px; position: relative; }
+        .close-button { position: absolute; right: 15px; top: 10px; border: none; background: none; cursor: pointer; font-size: 30px; color: #555; }
+        .modal-image { width: 100%; max-height: 450px; object-fit: contain; background: #eee; border-radius: 8px; margin-bottom: 16px; }
+        .modal-description { line-height: 1.6; color: #555; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .modal-download { display: inline-block; margin-top: 12px; text-decoration: none; }
+        @media (max-width: 650px) { header h1 { font-size: 25px; } .container { padding: 0 12px; } .auth-grid { grid-template-columns: 1fr; } .models-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-
 <body>
-
 <header>
     <h1>3D Repository</h1>
-    <p>Каталог 3D моделей</p>
+    <p>Каталог 3D-моделей [.blend]</p>
 </header>
 
-<div class="container">
+<main class="container">
+    <!-- Личный кабинет и формы авторизации -->
+    <section class="panel" id="auth-panel">
+        <h2>Личный кабинет</h2>
+        <p class="hint" id="auth-loading">Проверка авторизации...</p>
 
+        <div id="guest-panel" hidden>
+            <p class="hint">Просматривать и скачивать модели можно без регистрации. Для загрузки войдите в аккаунт.</p>
+            <div class="auth-grid">
+                <div>
+                    <h3>Регистрация</h3>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="register-username">Имя пользователя</label>
+                            <input id="register-username" type="text" minlength="3" maxlength="50" autocomplete="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input id="register-email" type="email" maxlength="255" autocomplete="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Пароль</label>
+                            <input id="register-password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+                        </div>
+                        <button class="button" type="submit">Зарегистрироваться</button>
+                    </form>
+                </div>
+                <div>
+                    <h3>Вход</h3>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input id="login-email" type="email" autocomplete="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Пароль</label>
+                            <input id="login-password" type="password" autocomplete="current-password" required>
+                        </div>
+                        <button class="button" type="submit">Войти</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    <div class="upload-form">
+        <div id="user-panel" hidden>
+            <div class="user-row">
+                <p>Вы вошли как: <strong id="current-username"></strong></p>
+                <button class="button button-light" type="button" id="logout-button">Выйти</button>
+            </div>
+        </div>
+        <p id="auth-message" class="feedback" role="status" aria-live="polite"></p>
+    </section>
 
-        <h2>Добавить 3D модель</h2>
-
+    <!-- Форма загрузки доступна только авторизованному пользователю -->
+    <section class="panel" id="upload-panel" hidden>
+        <h2>Добавить 3D-модель</h2>
         <form id="upload-form">
-
             <div class="form-group">
-                <label for="title">
-                    Название
-                </label>
-
-                <input
-                    type="text"
-                    id="title"
-                    placeholder="Название модели"
-                    required
-                >
+                <label for="title">Название</label>
+                <input type="text" id="title" placeholder="Например: Medieval Sword" required>
             </div>
-
-
             <div class="form-group">
-                <label for="description">
-                    Описание
-                </label>
-
-                <textarea
-                    id="description"
-                    placeholder="Описание 3D модели..."
-                    required
-                ></textarea>
+                <label for="description">Описание</label>
+                <textarea id="description" placeholder="Описание 3D-модели..." required></textarea>
             </div>
-
-
             <div class="form-group">
-                <label for="file">
-                    3D файл
-                </label>
-
-                <input
-                    type="file"
-                    id="file"
-                    accept=".blend"
-                    required
-                >
+                <label for="file">3D-файл (.blend)</label>
+                <input type="file" id="file" accept=".blend" required>
             </div>
-
-
             <div class="form-group">
-                <label for="image">
-                    Изображение-превью
-                </label>
-
-                <input
-                    type="file"
-                    id="image"
-                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                    required
-                >
+                <label for="image">Изображение-превью</label>
+                <input type="file" id="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
             </div>
-
-
-            <button
-                type="submit"
-                class="upload-button"
-                id="upload-button"
-            >
-                Загрузить модель
-            </button>
-
+            <button class="button" id="upload-button" type="submit">Загрузить модель</button>
         </form>
+        <p id="message" class="feedback" role="status" aria-live="polite"></p>
+    </section>
 
-        <div id="message"></div>
+    <!-- Каталог ВНЕ панелей авторизации и загрузки: он виден всем -->
+    <section id="catalog-section">
+        <h2 class="catalog-title">Каталог моделей</h2>
+        <div id="models" class="models-grid"><p>Загрузка моделей...</p></div>
+    </section>
+</main>
 
-    </div>
-
-
-
-    <h2 class="catalog-title">
-        Каталог моделей
-    </h2>
-
-    <div
-        id="models"
-        class="models-grid"
-    ></div>
-
-</div>
-
-
-
-<div
-    id="modal"
-    class="modal"
->
-
+<!-- Окно подробного просмотра -->
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content">
-
-        <span
-            class="close-button"
-            onclick="closeModal()"
-        >
-            &times;
-        </span>
-
-
+        <button type="button" id="close-modal" class="close-button" aria-label="Закрыть">&times;</button>
         <div id="modal-body"></div>
-
     </div>
-
 </div>
-
 
 <script>
+    const $ = (id) => document.getElementById(id);
+    let currentUser = null;
 
+    function setFeedback(id, text, isError = false) {
+        const element = $(id);
+        element.textContent = text;
+        element.className = "feedback " + (isError ? "error" : "success");
+    }
+
+    async function getErrorMessage(response) {
+        try {
+            const body = await response.json();
+            if (typeof body.detail === "string") return body.detail;
+            if (Array.isArray(body.detail)) return body.detail.map(x => x.msg || "Ошибка данных").join("; ");
+        } catch (_) { /* В ответе не JSON */ }
+        return `HTTP ${response.status}`;
+    }
+
+    async function refreshAuth() {
+        try {
+            const response = await fetch("/auth/me", { credentials: "same-origin" });
+            if (response.status === 401) {
+                currentUser = null;
+            } else if (response.ok) {
+                currentUser = await response.json();
+            } else {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            $("guest-panel").hidden = Boolean(currentUser);
+            $("user-panel").hidden = !currentUser;
+            $("upload-panel").hidden = !currentUser;
+            $("current-username").textContent = currentUser ? currentUser.username : "";
+        } catch (error) {
+            console.error("Ошибка проверки авторизации:", error);
+            currentUser = null;
+            $("guest-panel").hidden = false;
+            $("user-panel").hidden = true;
+            $("upload-panel").hidden = true;
+            setFeedback("auth-message", "Не удалось проверить авторизацию. Попробуйте обновить страницу.", true);
+        } finally {
+            $("auth-loading").hidden = true;
+        }
+    }
+
+    $("register-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button = event.submitter;
+        button.disabled = true;
+        try {
+            const payload = {
+                username: $("register-username").value.trim(),
+                email: $("register-email").value.trim(),
+                password: $("register-password").value
+            };
+            const response = await fetch("/auth/register", {
+                method: "POST", credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) throw new Error(await getErrorMessage(response));
+            $("register-form").reset();
+            setFeedback("auth-message", "Регистрация успешна! Теперь войдите в аккаунт.");
+        } catch (error) {
+            setFeedback("auth-message", "Ошибка регистрации: " + error.message, true);
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    $("login-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button = event.submitter;
+        button.disabled = true;
+        try {
+            const response = await fetch("/auth/login", {
+                method: "POST", credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: $("login-email").value.trim(),
+                    password: $("login-password").value
+                })
+            });
+            if (!response.ok) throw new Error(await getErrorMessage(response));
+            $("login-form").reset();
+            await refreshAuth();
+            if (currentUser) setFeedback("auth-message", "Вы успешно вошли в аккаунт.");
+        } catch (error) {
+            setFeedback("auth-message", "Ошибка входа: " + error.message, true);
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    $("logout-button").addEventListener("click", async () => {
+        try {
+            const response = await fetch("/auth/logout", {
+                method: "POST", credentials: "same-origin"
+            });
+            if (!response.ok) throw new Error(await getErrorMessage(response));
+            await refreshAuth();
+            setFeedback("auth-message", "Вы вышли из аккаунта.");
+        } catch (error) {
+            setFeedback("auth-message", "Ошибка выхода: " + error.message, true);
+        }
+    });
+
+    function createElement(tag, className, text) {
+        const el = document.createElement(tag);
+        if (className) el.className = className;
+        if (text !== undefined) el.textContent = String(text);
+        return el;
+    }
+
+    // Разрешаем только относительные пути файлов в uploads.
+    function uploadUrl(path) {
+        if (typeof path !== "string" || !/^uploads\/[a-zA-Z0-9_./-]+$/.test(path) || path.includes("..")) return null;
+        return "/" + path;
+    }
 
     async function loadModels() {
-
-        const modelsContainer =
-            document.getElementById("models");
-
-        modelsContainer.innerHTML =
-            "<p>Загрузка моделей...</p>";
-
-
+        const container = $("models");
+        container.replaceChildren(createElement("p", "", "Загрузка моделей..."));
         try {
-
-            const response =
-                await fetch("/models");
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Ошибка загрузки каталога"
-                );
-
-            }
-
-
-            const models =
-                await response.json();
-
-
-            modelsContainer.innerHTML = "";
-
-
-            if (models.length === 0) {
-
-                modelsContainer.innerHTML =
-                    "<p>Пока нет загруженных моделей.</p>";
-
+            const response = await fetch("/models");
+            if (!response.ok) throw new Error(await getErrorMessage(response));
+            const models = await response.json();
+            container.replaceChildren();
+            if (!models.length) {
+                container.appendChild(createElement("p", "", "Пока нет загруженных моделей."));
                 return;
             }
-
-
-            models.forEach(model => {
-
-                const card =
-                    document.createElement("div");
-
-                card.className =
-                    "model-card";
-
-
-
-                let previewHTML = "";
-
-
-                if (model.image_path) {
-
-                    previewHTML = `
-                        <div class="model-preview">
-                            <img
-                                src="/${model.image_path}"
-                                alt="${escapeHtml(model.title)}"
-                            >
-                        </div>
-                    `;
-
+            for (const model of models) {
+                const card = createElement("article", "model-card");
+                const preview = createElement("div", "model-preview");
+                const imageUrl = uploadUrl(model.image_path);
+                if (imageUrl) {
+                    const img = createElement("img");
+                    img.src = imageUrl;
+                    img.alt = model.title || "Превью модели";
+                    img.loading = "lazy";
+                    preview.appendChild(img);
                 } else {
-
-                    previewHTML = `
-                        <div class="model-preview">
-                            <div class="no-preview">
-                                Нет изображения
-                            </div>
-                        </div>
-                    `;
-
+                    preview.appendChild(createElement("div", "no-preview", "Нет изображения"));
                 }
-
-
-
-                card.innerHTML = `
-
-                    ${previewHTML}
-
-                    <div class="model-info">
-
-                        <h3>
-                            ${escapeHtml(model.title)}
-                        </h3>
-
-                        <div class="model-description">
-                            ${escapeHtml(model.description || "Нет описания")}
-                        </div>
-
-                        <div class="model-format">
-                            ${escapeHtml(model.format)}
-                        </div>
-
-                        <div class="model-buttons">
-
-                            <button
-                                class="details-button"
-                                onclick="showModel(${model.id})"
-                            >
-                                Подробнее
-                            </button>
-
-                            <button
-                                class="download-button"
-                                onclick="downloadModel(${model.id})"
-                            >
-                                Скачать
-                            </button>
-
-                        </div>
-
-                    </div>
-                `;
-
-
-                modelsContainer.appendChild(card);
-
-            });
-
-
+                const info = createElement("div", "model-info");
+                info.appendChild(createElement("h3", "", model.title));
+                info.appendChild(createElement("p", "model-description", model.description || "Нет описания"));
+                info.appendChild(createElement("span", "model-format", model.format));
+                const buttons = createElement("div", "model-buttons");
+                const details = createElement("button", "button button-light", "Подробнее");
+                details.type = "button";
+                details.addEventListener("click", () => showModel(model.id));
+                const download = createElement("button", "button", "Скачать");
+                download.type = "button";
+                download.addEventListener("click", () => { window.location.href = `/models/${model.id}/download`; });
+                buttons.append(details, download);
+                info.appendChild(buttons);
+                card.append(preview, info);
+                container.appendChild(card);
+            }
         } catch (error) {
-
-            console.error(error);
-
-            modelsContainer.innerHTML =
-                "<p class='error'>Не удалось загрузить каталог.</p>";
-
+            console.error("Ошибка загрузки каталога:", error);
+            container.replaceChildren(createElement("p", "error", "Не удалось загрузить каталог моделей."));
         }
-
     }
-
-
 
     async function showModel(id) {
-
         try {
-
-            const response =
-                await fetch(`/models/${id}`);
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Модель не найдена"
-                );
-
+            const response = await fetch(`/models/${id}`);
+            if (!response.ok) throw new Error(await getErrorMessage(response));
+            const model = await response.json();
+            const body = $("modal-body");
+            body.replaceChildren();
+            const imageUrl = uploadUrl(model.image_path);
+            if (imageUrl) {
+                const img = createElement("img", "modal-image");
+                img.src = imageUrl;
+                img.alt = model.title || "Превью модели";
+                body.appendChild(img);
             }
-
-
-            const model =
-                await response.json();
-
-
-            const modal =
-                document.getElementById("modal");
-
-            const modalBody =
-                document.getElementById("modal-body");
-
-
-            let imageHTML = "";
-
-
-            if (model.image_path) {
-
-                imageHTML = `
-                    <img
-                        class="modal-image"
-                        src="/${model.image_path}"
-                        alt="${escapeHtml(model.title)}"
-                    >
-                `;
-
-            }
-
-
-            modalBody.innerHTML = `
-
-                ${imageHTML}
-
-                <h2>
-                    ${escapeHtml(model.title)}
-                </h2>
-
-                <p>
-                    <strong>Формат:</strong>
-                    ${escapeHtml(model.format)}
-                </p>
-
-                <p class="modal-description">
-                    ${escapeHtml(model.description || "Нет описания")}
-                </p>
-
-                <a
-                    class="modal-download"
-                    href="/models/${model.id}/download"
-                >
-                    Скачать модель
-                </a>
-
-            `;
-
-
-            modal.style.display =
-                "flex";
-
-
+            const title = createElement("h2", "", model.title);
+            title.id = "modal-title";
+            body.appendChild(title);
+            body.appendChild(createElement("p", "", `Формат: ${model.format}`));
+            body.appendChild(createElement("p", "modal-description", model.description || "Нет описания"));
+            const link = createElement("a", "button modal-download", "Скачать модель");
+            link.href = `/models/${model.id}/download`;
+            body.appendChild(link);
+            $("modal").hidden = false;
         } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Не удалось загрузить информацию о модели."
-            );
-
+            console.error("Ошибка открытия модели:", error);
+            alert("Не удалось загрузить информацию о модели.");
         }
-
     }
 
+    function closeModal() { $("modal").hidden = true; }
+    $("close-modal").addEventListener("click", closeModal);
+    $("modal").addEventListener("click", (event) => {
+        if (event.target === $("modal")) closeModal();
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeModal();
+    });
 
-
-    function closeModal() {
-
-        document.getElementById("modal")
-            .style.display = "none";
-
-    }
-
-
-
-    window.onclick = function(event) {
-
-        const modal =
-            document.getElementById("modal");
-
-
-        if (event.target === modal) {
-
-            closeModal();
-
+    $("upload-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!currentUser) {
+            setFeedback("message", "Для загрузки сначала войдите в аккаунт.", true);
+            return;
         }
-
-    };
-
-
-
-    function downloadModel(id) {
-
-        window.location.href =
-            `/models/${id}/download`;
-
-    }
-
-
-
-    document
-        .getElementById("upload-form")
-        .addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                const title =
-                    document.getElementById("title").value;
-
-                const description =
-                    document.getElementById("description").value;
-
-                const file =
-                    document.getElementById("file").files[0];
-
-                const image =
-                    document.getElementById("image").files[0];
-
-
-                const message =
-                    document.getElementById("message");
-
-                const button =
-                    document.getElementById("upload-button");
-
-
-
-                if (!file) {
-
-                    message.className =
-                        "error";
-
-                    message.textContent =
-                        "Выберите 3D файл.";
-
-                    return;
-
-                }
-
-
-                if (!image) {
-
-                    message.className =
-                        "error";
-
-                    message.textContent =
-                        "Выберите изображение.";
-
-                    return;
-
-                }
-
-
-                const fileExtension =
-                    file.name
-                        .split(".")
-                        .pop()
-                        .toLowerCase();
-
-
-                if (fileExtension !== "blend") {
-
-                    message.className =
-                        "error";
-
-                    message.textContent =
-                        "Разрешены только файлы .blend";
-
-                    return;
-
-                }
-
-
-
-                const imageExtension =
-                    image.name
-                        .split(".")
-                        .pop()
-                        .toLowerCase();
-
-
-                const allowedImages = [
-                    "jpg",
-                    "jpeg",
-                    "png",
-                    "webp"
-                ];
-
-
-                if (
-                    !allowedImages.includes(
-                        imageExtension
-                    )
-                ) {
-
-                    message.className =
-                        "error";
-
-                    message.textContent =
-                        "Разрешены JPG, JPEG, PNG и WEBP.";
-
-                    return;
-
-                }
-
-
-
-                const formData =
-                    new FormData();
-
-
-                formData.append(
-                    "title",
-                    title
-                );
-
-
-                formData.append(
-                    "description",
-                    description
-                );
-
-
-                formData.append(
-                    "file",
-                    file
-                );
-
-
-                formData.append(
-                    "image",
-                    image
-                );
-
-
-
-                button.disabled = true;
-
-                button.textContent =
-                    "Загрузка...";
-
-
-                message.className = "";
-
-                message.textContent =
-                    "Загрузка модели...";
-
-
-                try {
-
-                    const response =
-                        await fetch(
-                            "/models/upload",
-                            {
-                                method: "POST",
-                                body: formData
-                            }
-                        );
-
-
-                    
-
-                    const responseText =
-                        await response.text();
-
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            `HTTP ${response.status}: ${responseText}`
-                        );
-
-                    }
-
-
-                    let result;
-
-                    try {
-
-                        result =
-                            JSON.parse(responseText);
-
-                    } catch {
-
-                        throw new Error(
-                            "Сервер вернул некорректный ответ."
-                        );
-
-                    }
-
-
-                    console.log(
-                        "Модель загружена:",
-                        result
-                    );
-
-
-
-                    message.className =
-                        "success";
-
-                    message.textContent =
-                        "Модель успешно загружена!";
-
-
-
-                    document
-                        .getElementById("upload-form")
-                        .reset();
-
-
-
-                    await loadModels();
-
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    message.className =
-                        "error";
-
-                    message.textContent =
-                        "Ошибка загрузки: " +
-                        error.message;
-
-
-                } finally {
-
-                    button.disabled = false;
-
-                    button.textContent =
-                        "Загрузить модель";
-
-                }
-
+        const file = $("file").files[0];
+        const image = $("image").files[0];
+        if (!file || !file.name.toLowerCase().endsWith(".blend")) {
+            setFeedback("message", "Выберите файл формата .blend.", true);
+            return;
+        }
+        if (!image || !/\.(jpg|jpeg|png|webp)$/i.test(image.name)) {
+            setFeedback("message", "Выберите изображение JPG, JPEG, PNG или WEBP.", true);
+            return;
+        }
+        const formData = new FormData();
+        formData.append("title", $("title").value);
+        formData.append("description", $("description").value);
+        formData.append("file", file);
+        formData.append("image", image);
+        const button = $("upload-button");
+        button.disabled = true;
+        button.textContent = "Загрузка...";
+        setFeedback("message", "Загрузка модели...");
+        try {
+            const response = await fetch("/models/upload", {
+                method: "POST", credentials: "same-origin", body: formData
+            });
+            if (!response.ok) {
+                if (response.status === 401) await refreshAuth();
+                throw new Error(await getErrorMessage(response));
             }
-        );
+            $("upload-form").reset();
+            setFeedback("message", "Модель успешно загружена!");
+            await loadModels();
+        } catch (error) {
+            console.error("Ошибка загрузки:", error);
+            setFeedback("message", "Ошибка загрузки: " + error.message, true);
+        } finally {
+            button.disabled = false;
+            button.textContent = "Загрузить модель";
+        }
+    });
 
-
-
-    function escapeHtml(text) {
-
-        const div =
-            document.createElement("div");
-
-        div.textContent =
-            text;
-
-        return div.innerHTML;
-
-    }
-
-
-
+    // Запускаем независимо: каталог доступен и гостям, и авторизованным пользователям.
     loadModels();
-
+    refreshAuth();
 </script>
-
 </body>
 </html>
-
