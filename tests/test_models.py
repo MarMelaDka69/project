@@ -9,17 +9,15 @@ def test_models_initially_empty(client):
     assert response.json() == []
 
 
-def test_create_model(client):
+def test_create_model(authenticated_client):
     payload = {
         "title": "BMW M5",
         "description": "Car model",
         "format": "BLEND",
     }
 
-    response = client.post(
-        "/models",
-        json=payload,
-    )
+    response = authenticated_client.post("/models", json=payload)
+    assert response.status_code == 200
 
     assert response.status_code == 200
 
@@ -31,8 +29,8 @@ def test_create_model(client):
     assert data["format"] == "BLEND"
 
 
-def test_model_saved_in_database(test_env):
-    client = test_env["client"]
+def test_model_saved_in_database(test_env, authenticated_client):
+    client = authenticated_client
 
     response = client.post(
         "/models",
@@ -54,7 +52,8 @@ def test_model_saved_in_database(test_env):
         assert model.format == "BLEND"
 
 
-def test_get_models(client):
+def test_get_models(authenticated_client):
+    client = authenticated_client
     client.post(
         "/models",
         json={
@@ -71,7 +70,8 @@ def test_get_models(client):
     assert response.json()[0]["title"] == "Robot"
 
 
-def test_get_model_by_id(client):
+def test_get_model_by_id(authenticated_client):
+    client = authenticated_client
     created = client.post(
         "/models",
         json={
@@ -98,10 +98,23 @@ def test_model_not_found(client):
     }
 
 
-def test_invalid_model_data(client):
+def test_invalid_model_data(authenticated_client):
+    client = authenticated_client
     response = client.post(
         "/models",
         json={"title": "Incomplete"},
     )
 
     assert response.status_code == 422
+
+def test_create_model_requires_auth(client):
+    response = client.post(
+        "/models",
+        json={
+            "title": "Unauthorized",
+            "description": "Test",
+            "format": "BLEND",
+        },
+    )
+
+    assert response.status_code == 401
