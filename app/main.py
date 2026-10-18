@@ -1,3 +1,5 @@
+import os
+
 from pathlib import Path
 
 from fastapi import (
@@ -469,11 +471,15 @@ def login_user(user_data: UserLogin, response: Response):
 
         token = create_session(user.id)
 
+        cookie_secure = os.getenv(
+            "COOKIE_SECURE", "true"
+        ).lower() == "true"
+
         response.set_cookie(
             key="session",
             value=token,
             httponly=True,
-            secure=False,  # nолько для локальной HTTP
+            secure=cookie_secure,
             samesite="lax",
             max_age=60 * 60 * 24 * 7,
             path="/"
