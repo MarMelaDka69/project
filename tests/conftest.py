@@ -69,7 +69,18 @@ def test_env(tmp_path, monkeypatch):
 
 @pytest.fixture
 def client(test_env):
-    return test_env["client"]
+    test_client = test_env["client"]
+
+    response = test_client.get("/auth/csrf")
+    assert response.status_code == 200
+
+    token = response.json()["csrf_token"]
+
+    test_client.headers.update({
+        "X-CSRF-Token": token
+    })
+
+    return test_client
 
 
 @pytest.fixture
