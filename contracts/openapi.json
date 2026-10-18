@@ -352,6 +352,22 @@
           }
         }
       }
+    },
+    "/auth/csrf": {
+      "get": {
+        "summary": "Get Csrf",
+        "operationId": "get_csrf_auth_csrf_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

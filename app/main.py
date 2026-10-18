@@ -13,6 +13,11 @@ from fastapi import (
     status,
 )
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+from app.csrf import create_csrf_token, verify_csrf
+
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -29,6 +34,18 @@ from app.security import hash_password, verify_password
 
 app = FastAPI(title="3D Repository")
 
+@app.middleware("http")
+async def csrf_protection(request: Request, call_next):
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        try:
+            verify_csrf(request)
+        except HTTPException as exc:
+            return JSONResponse(
+                status_code=exc.status_code,
+                content={"detail": exc.detail},
+            )
+
+    return await call_next(request)
 
 # удалено для теста
 #Base.metadata.create_all(bind=engine)
@@ -504,3 +521,12 @@ def logout_user(response: Response):
     )
 
     return {"message": "Logged out"}
+
+
+@app.get("/auth/csrf")
+def get_csrf(request: Request, response: Response):
+    token = create_csrf_token(response, request)
+
+    response.headers["Cache-Control"] = "no-store"
+
+    return {"csrf_token": token}

@@ -158,6 +158,21 @@
     const $ = (id) => document.getElementById(id);
     let currentUser = null;
 
+    // CSRF token is readable only through this same-origin endpoint.
+    let csrfToken = null;
+
+    async function getCsrfToken() {
+        const response = await fetch("/auth/csrf", {
+            credentials: "same-origin",
+            cache: "no-store"
+        });
+        if (!response.ok) throw new Error("Не удалось получить CSRF-токен");
+        const data = await response.json();
+        csrfToken = data.csrf_token;
+        return csrfToken;
+    }
+
+
     function setFeedback(id, text, isError = false) {
         const element = $(id);
         element.textContent = text;
@@ -209,9 +224,10 @@
                 email: $("register-email").value.trim(),
                 password: $("register-password").value
             };
+            const csrf = await getCsrfToken();
             const response = await fetch("/auth/register", {
                 method: "POST", credentials: "same-origin",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
                 body: JSON.stringify(payload)
             });
             if (!response.ok) throw new Error(await getErrorMessage(response));
@@ -229,9 +245,10 @@
         const button = event.submitter;
         button.disabled = true;
         try {
+            const csrf = await getCsrfToken();
             const response = await fetch("/auth/login", {
                 method: "POST", credentials: "same-origin",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
                 body: JSON.stringify({
                     email: $("login-email").value.trim(),
                     password: $("login-password").value
@@ -250,8 +267,10 @@
 
     $("logout-button").addEventListener("click", async () => {
         try {
+            const csrf = await getCsrfToken();
             const response = await fetch("/auth/logout", {
-                method: "POST", credentials: "same-origin"
+                method: "POST", credentials: "same-origin",
+                headers: { "X-CSRF-Token": csrf }
             });
             if (!response.ok) throw new Error(await getErrorMessage(response));
             await refreshAuth();
@@ -385,8 +404,10 @@
         button.textContent = "Загрузка...";
         setFeedback("message", "Загрузка модели...");
         try {
+            const csrf = await getCsrfToken();
             const response = await fetch("/models/upload", {
-                method: "POST", credentials: "same-origin", body: formData
+                method: "POST", credentials: "same-origin", body: formData,
+                headers: { "X-CSRF-Token": csrf }
             });
             if (!response.ok) {
                 if (response.status === 401) await refreshAuth();
