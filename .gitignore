@@ -3,3 +3,5 @@ venv
 *.pyc
 .env
 uploads/
+.env.*
+!.env.example

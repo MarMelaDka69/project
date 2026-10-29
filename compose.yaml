@@ -1,0 +1,46 @@
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+
+    env_file:
+      - .env.docker
+
+    environment:
+      DATABASE_URL: postgresql+psycopg://repo3d_user:${DOCKER_DB_PASSWORD:?Set DOCKER_DB_PASSWORD}@db:5432/repo3d_db
+      COOKIE_SECURE: "false"
+
+    ports:
+      - "127.0.0.1:8002:8000"
+
+    volumes:
+      - model_uploads:/code/uploads
+      - messages_data:/code/data
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: repo3d_db
+      POSTGRES_USER: repo3d_user
+      POSTGRES_PASSWORD: ${DOCKER_DB_PASSWORD:?Set DOCKER_DB_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U repo3d_user -d repo3d_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  model_uploads:
+  messages_data:
